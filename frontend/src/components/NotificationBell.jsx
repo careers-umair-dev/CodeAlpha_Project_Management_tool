@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, CheckCheck } from 'lucide-react';
+import { Bell, CheckCheck, Trash2 } from 'lucide-react';
 import { useNotifications, notificationIcon } from '../context/NotificationContext';
 import { timeAgo } from './Badges';
 
 const NotificationBell = () => {
-  const { notifications, unreadCount, markAllRead } = useNotifications();
+  const { notifications, unreadCount, markAllRead, clearAll } = useNotifications();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
@@ -20,7 +20,6 @@ const NotificationBell = () => {
 
   const handleToggle = () => {
     setOpen((v) => !v);
-    if (!open) markAllRead();
   };
 
   return (
@@ -43,9 +42,26 @@ const NotificationBell = () => {
           <div className="flex items-center justify-between border-b border-ink-100 px-4 py-3">
             <h3 className="text-sm font-semibold text-ink-800">Notifications</h3>
             {notifications.length > 0 && (
-              <span className="flex items-center gap-1 text-xs text-ink-400">
-                <CheckCheck size={12} /> All read
-              </span>
+              <div className="flex items-center gap-2">
+                {unreadCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={markAllRead}
+                    className="flex items-center gap-1 text-xs text-ink-500 hover:text-ink-900"
+                  >
+                    <CheckCheck size={12} /> Mark read
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  className="rounded p-1 text-ink-400 hover:bg-ink-100 hover:text-clay-600"
+                  aria-label="Clear notifications"
+                  title="Clear notifications"
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
             )}
           </div>
 
@@ -57,12 +73,14 @@ const NotificationBell = () => {
                 const Icon = notificationIcon(n.type);
                 return (
                   <button
-                    key={n.id}
+                    key={n._id || n.id}
                     onClick={() => {
                       setOpen(false);
                       if (n.projectId) navigate(`/projects/${n.projectId}`);
                     }}
-                    className="flex w-full items-start gap-3 border-b border-ink-50 px-4 py-3 text-left last:border-b-0 hover:bg-ink-50"
+                    className={`flex w-full items-start gap-3 border-b border-ink-50 px-4 py-3 text-left last:border-b-0 hover:bg-ink-50 ${
+                      n.read ? '' : 'bg-moss-50/50'
+                    }`}
                   >
                     <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink-100 text-ink-500">
                       <Icon size={14} />

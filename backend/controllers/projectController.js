@@ -19,8 +19,8 @@ const getProjects = asyncHandler(async (req, res) => {
   const projects = await Project.find({
     $or: [{ owner: req.user._id }, { members: req.user._id }],
   })
-    .populate('owner', 'name email avatarColor')
-    .populate('members', 'name email avatarColor')
+    .populate('owner', 'name email avatarColor avatarUrl')
+    .populate('members', 'name email avatarColor avatarUrl')
     .sort({ updatedAt: -1 });
 
   // Attach task stats per project
@@ -58,8 +58,8 @@ const getProjects = asyncHandler(async (req, res) => {
 // @access  Private
 const getProject = asyncHandler(async (req, res) => {
   const project = await Project.findById(req.params.id)
-    .populate('owner', 'name email avatarColor')
-    .populate('members', 'name email avatarColor');
+    .populate('owner', 'name email avatarColor avatarUrl')
+    .populate('members', 'name email avatarColor avatarUrl');
 
   if (!project) {
     return res.status(404).json({ success: false, message: 'Project not found' });
@@ -97,8 +97,8 @@ const createProject = asyncHandler(async (req, res) => {
   });
 
   const populated = await project.populate([
-    { path: 'owner', select: 'name email avatarColor' },
-    { path: 'members', select: 'name email avatarColor' },
+    { path: 'owner', select: 'name email avatarColor avatarUrl' },
+    { path: 'members', select: 'name email avatarColor avatarUrl' },
   ]);
 
   res.status(201).json({ success: true, project: populated });
@@ -124,8 +124,8 @@ const updateProject = asyncHandler(async (req, res) => {
 
   await project.save();
   const populated = await project.populate([
-    { path: 'owner', select: 'name email avatarColor' },
-    { path: 'members', select: 'name email avatarColor' },
+    { path: 'owner', select: 'name email avatarColor avatarUrl' },
+    { path: 'members', select: 'name email avatarColor avatarUrl' },
   ]);
 
   res.json({ success: true, project: populated });
@@ -185,12 +185,12 @@ const addMember = asyncHandler(async (req, res) => {
   await project.save();
 
   const populated = await project.populate([
-    { path: 'owner', select: 'name email avatarColor' },
-    { path: 'members', select: 'name email avatarColor' },
+    { path: 'owner', select: 'name email avatarColor avatarUrl' },
+    { path: 'members', select: 'name email avatarColor avatarUrl' },
   ]);
 
   const io = req.app.get('io');
-  notifyUser(io, user._id, {
+  await notifyUser(io, user._id, {
     type: 'project_member_added',
     message: `${req.user.name} added you to "${project.title}"`,
     projectId: project._id,
@@ -221,8 +221,8 @@ const removeMember = asyncHandler(async (req, res) => {
   );
 
   const populated = await project.populate([
-    { path: 'owner', select: 'name email avatarColor' },
-    { path: 'members', select: 'name email avatarColor' },
+    { path: 'owner', select: 'name email avatarColor avatarUrl' },
+    { path: 'members', select: 'name email avatarColor avatarUrl' },
   ]);
 
   res.json({ success: true, project: populated });
@@ -240,7 +240,7 @@ const getDashboardStats = asyncHandler(async (req, res) => {
 
   const tasks = await Task.find({ project: { $in: projectIds } })
     .populate('project', 'title color')
-    .populate('assignee', 'name avatarColor')
+    .populate('assignee', 'name avatarColor avatarUrl')
     .sort({ updatedAt: -1 });
 
   const totalProjects = projects.length;

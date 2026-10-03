@@ -16,7 +16,7 @@ const ConfirmDialog = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/40 p-4 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-sm rounded-xl2 bg-white p-5 shadow-modal">
+      <div className="my-auto w-full max-w-sm rounded-xl2 bg-white p-5 shadow-modal sm:p-6">
         <div className="flex items-start justify-between">
           <div
             className={`flex h-10 w-10 items-center justify-center rounded-full ${

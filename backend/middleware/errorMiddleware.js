@@ -7,7 +7,7 @@ const notFound = (req, res, next) => {
 
 // Central error handler - formats all thrown/passed errors consistently
 const errorHandler = (err, req, res, next) => {
-  let statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+  let statusCode = err.statusCode || (res.statusCode && res.statusCode !== 200 ? res.statusCode : 500);
   let message = err.message || 'Server error';
 
   // Mongoose bad ObjectId

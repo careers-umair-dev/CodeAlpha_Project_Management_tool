@@ -1,10 +1,11 @@
 import React from 'react';
-import { MessageSquare } from 'lucide-react';
+import { CheckSquare, GitBranch, MessageSquare } from 'lucide-react';
 import { isPast, isToday } from 'date-fns';
 import Avatar from './Avatar';
 import { PriorityBadge, DueDateLabel } from './Badges';
 
 const TaskCard = ({ task, onClick, onDragStart, commentCount }) => {
+  const openDependencies = (task.blockedBy || []).filter((dependency) => dependency.status !== 'Completed');
   const isOverdue =
     task.dueDate && task.status !== 'Completed' && isPast(new Date(task.dueDate)) && !isToday(new Date(task.dueDate));
 
@@ -28,6 +29,16 @@ const TaskCard = ({ task, onClick, onDragStart, commentCount }) => {
       <div className="mt-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <PriorityBadge priority={task.priority} />
+          {openDependencies.length > 0 && (
+            <span className="flex items-center gap-1 text-xs font-medium text-amber-700" title={openDependencies.map((dependency) => dependency.title).join(', ')}>
+              <GitBranch size={12} /> Blocked
+            </span>
+          )}
+          {task.checklist?.length > 0 && (
+            <span className="flex items-center gap-1 text-xs text-ink-400" title="Checklist progress">
+              <CheckSquare size={12} /> {task.checklist.filter((item) => item.completed).length}/{task.checklist.length}
+            </span>
+          )}
           {typeof commentCount === 'number' && commentCount > 0 && (
             <span className="flex items-center gap-1 text-xs text-ink-400">
               <MessageSquare size={12} /> {commentCount}

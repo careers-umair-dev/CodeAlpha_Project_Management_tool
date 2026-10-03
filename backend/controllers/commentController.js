@@ -15,7 +15,7 @@ const getCommentsForTask = asyncHandler(async (req, res) => {
   }
 
   const comments = await Comment.find({ task: task._id })
-    .populate('author', 'name email avatarColor')
+    .populate('author', 'name email avatarColor avatarUrl')
     .sort({ createdAt: 1 });
 
   res.json({ success: true, comments });
@@ -41,7 +41,7 @@ const createComment = asyncHandler(async (req, res) => {
   }
 
   const comment = await Comment.create({ task: taskId, author: req.user._id, text: text.trim() });
-  const populated = await comment.populate('author', 'name email avatarColor');
+  const populated = await comment.populate('author', 'name email avatarColor avatarUrl');
 
   const io = req.app.get('io');
   io.to(`project:${task.project._id}`).emit('comment:created', { taskId, comment: populated });
@@ -52,14 +52,14 @@ const createComment = asyncHandler(async (req, res) => {
     ...task.project.members.map((m) => m.toString()),
   ]);
   recipientIds.delete(req.user._id.toString());
-  recipientIds.forEach((recipientId) => {
+  await Promise.all([...recipientIds].map((recipientId) =>
     notifyUser(io, recipientId, {
       type: 'comment_added',
       message: `${req.user.name} commented on "${task.title}"`,
       projectId: task.project._id,
       taskId: task._id,
-    });
-  });
+    })
+  ));
 
   res.status(201).json({ success: true, comment: populated });
 });
@@ -74,7 +74,7 @@ const deleteComment = asyncHandler(async (req, res) => {
   });
   if (!comment) return res.status(404).json({ success: false, message: 'Comment not found' });
 
-  if (comment.author.toString() !== req.user._id.toString()) {
+  if (!comment.author || comment.author.toString() !== req.user._id.toString()) {
     return res.status(403).json({ success: false, message: 'You can only delete your own comments' });
   }
 

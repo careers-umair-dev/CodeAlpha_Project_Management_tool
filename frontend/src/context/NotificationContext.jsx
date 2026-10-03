@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { UserPlus2, MessageSquare, CheckCircle2, Bell } from 'lucide-react';
 import { useAuth } from './AuthContext';
 import { getSocket } from '../services/socket';
+import { getErrorMessage, notificationApi } from '../services/api';
 
 const NotificationContext = createContext(null);
 
@@ -35,25 +36,65 @@ export const NotificationProvider = ({ children }) => {
       return;
     }
 
+    let active = true;
+    notificationApi
+      .list()
+      .then(({ data }) => {
+        if (!active) return;
+        setNotifications((current) => {
+          const byId = new Map();
+          [...current, ...data.notifications].forEach((notification) => {
+            const id = notification._id || notification.id;
+            if (id) byId.set(id, notification);
+          });
+          return [...byId.values()]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, MAX_NOTIFICATIONS);
+        });
+        setUnreadCount((current) => Math.max(current, data.unreadCount));
+      })
+      .catch((error) => {
+        if (active) toast.error(getErrorMessage(error));
+      });
+
     const socket = getSocket();
-    if (!socket) return;
+    if (!socket) return () => { active = false; };
 
     const onNotification = (notification) => {
-      setNotifications((prev) => [{ ...notification, read: false }, ...prev].slice(0, MAX_NOTIFICATIONS));
-      setUnreadCount((c) => c + 1);
+      const id = notification._id || notification.id;
+      setNotifications((prev) => {
+        if (prev.some((item) => (item._id || item.id) === id)) return prev;
+        return [{ ...notification, read: false }, ...prev].slice(0, MAX_NOTIFICATIONS);
+      });
+      setUnreadCount((count) => count + 1);
       toast(notification.message, { icon: '🔔' });
     };
 
     socket.on('notification', onNotification);
-    return () => socket.off('notification', onNotification);
+    return () => {
+      active = false;
+      socket.off('notification', onNotification);
+    };
   }, [user]);
 
-  const markAllRead = useCallback(() => {
+  const markAllRead = useCallback(async () => {
+    try {
+      await notificationApi.markAllRead();
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      return;
+    }
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     setUnreadCount(0);
   }, []);
 
-  const clearAll = useCallback(() => {
+  const clearAll = useCallback(async () => {
+    try {
+      await notificationApi.clear();
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      return;
+    }
     setNotifications([]);
     setUnreadCount(0);
   }, []);

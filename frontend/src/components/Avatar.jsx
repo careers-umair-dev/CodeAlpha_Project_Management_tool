@@ -13,7 +13,10 @@ const sizeClasses = {
   sm: 'h-7 w-7 text-xs',
   md: 'h-9 w-9 text-sm',
   lg: 'h-12 w-12 text-base',
+  xl: 'h-24 w-24 text-3xl',
 };
+
+const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
 
 const Avatar = ({ user, size = 'sm', ring = false, className = '' }) => {
   if (!user) {
@@ -27,15 +30,29 @@ const Avatar = ({ user, size = 'sm', ring = false, className = '' }) => {
     );
   }
 
+  const avatarUrl = user.avatarUrl
+    ? (/^(https?:\/\/|blob:|data:)/i.test(user.avatarUrl) ? user.avatarUrl : `${API_ORIGIN}${user.avatarUrl}`)
+    : '';
+
   return (
     <div
       title={user.name}
-      className={`flex items-center justify-center rounded-full font-semibold text-white ${sizeClasses[size]} ${
+      className={`relative flex items-center justify-center overflow-hidden rounded-full font-semibold text-white ${sizeClasses[size]} ${
         ring ? 'ring-2 ring-white' : ''
       } ${className}`}
       style={{ backgroundColor: user.avatarColor || '#5B6B80' }}
     >
-      {getInitials(user.name)}
+      {avatarUrl && (
+        <img
+          src={avatarUrl}
+          alt={`${user.name}'s profile`}
+          className="absolute inset-0 h-full w-full object-cover"
+          onError={(event) => {
+            event.currentTarget.style.display = 'none';
+          }}
+        />
+      )}
+      <span>{getInitials(user.name)}</span>
     </div>
   );
 };

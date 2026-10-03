@@ -1,64 +1,75 @@
 # Ridgeline — Project Management Tool
 
-A full-stack, Trello/Asana-style project management platform built with the MERN stack. Teams can create projects, invite members, organize work on a Kanban board, assign and track tasks, and discuss work in real time through task comments.
+A full-stack, Trello/Asana-style project management platform built with the MERN stack. Ridgeline enables teams to create and manage projects, collaborate with members, organize work through Kanban boards, assign and track tasks, and communicate through real-time task comments.
 
-## Tech stack
+## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18 + Vite + Tailwind CSS |
-| Backend | Node.js + Express.js |
-| Database | MongoDB + Mongoose |
-| Auth | JWT + bcrypt |
-| Real-time | Socket.IO |
-| HTTP client | Axios |
+| Layer                   | Technology                     |
+| ----------------------- | ------------------------------ |
+| Frontend                | React 18 + Vite + Tailwind CSS |
+| Backend                 | Node.js + Express.js           |
+| Database                | MongoDB + Mongoose             |
+| Authentication          | JWT + bcrypt                   |
+| Real-Time Communication | Socket.IO                      |
+| HTTP Client             | Axios                          |
 
 ## Features
 
-- **Auth** — registration, login, JWT-protected routes (frontend + backend), profile editing, password change.
-- **Projects** — create/edit/delete, deadlines, invite/remove members by email, per-project progress bar.
-- **Kanban board** — To Do / In Progress / Review / Completed columns with drag-and-drop status changes.
-- **Tasks** — title, description, assignee, priority, due date, created date; overdue/upcoming tasks highlighted.
-- **Comments** — per-task comments with author + timestamp, delete your own comments, live updates via Socket.IO.
-- **Dashboard** — totals for projects/tasks, completed vs pending, overdue tasks, recent activity.
-- **UI/UX** — responsive layout, sidebar + navbar, loading/empty states, toast notifications, confirmation dialogs.
+* **Authentication** — User registration, login, JWT-protected routes, profile management, password changes, and account deletion with password confirmation and shared-work anonymization. Deletion removes memberships, assignments, owned notifications, and avatar; shared tasks/comments remain attributed to “Former member”, and project ownership must be transferred first.
+* **Profile & Avatar** — Edit your name and professional title, upload or remove a profile photo, and manage your password. JPEG, PNG, and WebP images up to 2 MB are supported.
+* **Project Management** — Create, update, and delete projects, manage deadlines, invite or remove members by email, and track project progress.
+* **Kanban Board** — Organize tasks across To Do, In Progress, Review, and Completed columns with drag-and-drop status updates.
+* **Task Management** — Create tasks with titles, descriptions, assignees, priorities, due dates, and creation dates. Overdue and upcoming tasks are visually highlighted.
+* **Task Checklists** — Add up to 50 trackable checklist items to a task, monitor completion progress on the Kanban cards, and save checklist changes with task updates.
+* **Task Dependencies** — Link tasks that must finish first, see blocked tasks on the Kanban board and in My Tasks, and prevent completion until all dependencies are complete. Dependencies are restricted to the same project, cycles are rejected, and deleting or reopening a task keeps dependent work consistent.
+* **My Tasks & Calendar** — View your assigned tasks across projects, search by title, filter by status, priority, project, or due-date range, and plan deadlines in a month calendar.
+* **Persistent Notifications** — Assignment, completion, comment, and project-invite notifications are saved to your account, synced live, marked read on demand, and clearable from the notification menu.
+* **Comments & Collaboration** — Add task-specific comments with author and timestamp information, delete your own comments, and receive live updates through Socket.IO.
+* **Dashboard** — View project and task statistics, completed and pending tasks, overdue tasks, and recent activity.
+* **Responsive UI/UX** — Modern responsive interface with sidebar navigation, navbar, loading states, empty states, toast notifications, and confirmation dialogs.
+* **Premium workspace navigation** — Use `Ctrl/Cmd + K` to search workspace pages, projects, and tasks, with keyboard navigation and a persistent light/dark theme toggle.
 
-## Project structure
+## Project Structure
 
-```
+```text
 project-management-tool/
-├── backend/    Express API, MongoDB models, Socket.IO
-└── frontend/   React + Vite + Tailwind client
+
+├── backend/        Express API, MongoDB models, and Socket.IO
+└── frontend/       React + Vite + Tailwind CSS client
 ```
 
-See inline comments in each folder for details; the layout matches the structure below.
+### Backend & Frontend Structure
 
-```
+```text
 backend/
-├── config/db.js              MongoDB connection
-├── controllers/               Route handlers (auth, project, task, comment)
-├── models/                    Mongoose schemas (User, Project, Task, Comment)
-├── routes/                    Express routers
-├── middleware/                JWT auth guard + centralized error handler
-├── socket/socket.js           Socket.IO auth + room join/leave
-└── server.js                  App entry point
+
+├── config/db.js               MongoDB connection
+├── controllers/               Route handlers for auth, projects, tasks, comments
+├── models/                    Mongoose schemas for User, Project, Task, Comment
+├── routes/                    Express API routers
+├── middleware/                JWT authentication and centralized error handling
+├── socket/socket.js           Socket.IO authentication and room management
+└── server.js                  Application entry point
 
 frontend/src/
-├── components/                Reusable UI (Navbar, Sidebar, KanbanBoard, TaskModal, ...)
-├── pages/                     Route-level views (Login, Dashboard, Projects, ProjectDetails, Profile)
-├── context/AuthContext.jsx    Auth state, login/register/logout
-├── services/                  api.js (Axios) and socket.js (Socket.IO client)
-└── App.jsx / main.jsx         Routing and app bootstrap
+
+├── components/                Reusable UI components
+├── pages/                     Route-level views
+├── context/AuthContext.jsx    Authentication state management
+├── services/                  Axios API and Socket.IO client services
+└── App.jsx / main.jsx         Application routing and bootstrap
 ```
 
 ## Prerequisites
 
-- Node.js 18+
-- A MongoDB instance — either a local install or a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster
+* Node.js 18+
+* MongoDB — local installation or a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster
 
 ## Setup
 
-### 1. Clone / unzip and install dependencies
+### 1. Clone or Extract the Project
+
+Install dependencies for both the backend and frontend:
 
 ```bash
 cd project-management-tool/backend
@@ -68,88 +79,160 @@ cd ../frontend
 npm install
 ```
 
-### 2. Configure environment variables
+### 2. Configure Environment Variables
 
-Each app has an `.env.example` — copy it to `.env` and fill in real values.
+Both applications include an `.env.example` file. Copy it to `.env` and configure the required values.
 
-**backend/.env**
-```
+**Backend — `backend/.env`**
+
+```env
 MONGO_URI=mongodb://127.0.0.1:27017/pm-tool
+
 JWT_SECRET=replace_this_with_a_long_random_secret
 JWT_EXPIRES_IN=7d
+
 PORT=5000
 CLIENT_URL=http://localhost:5173
 NODE_ENV=development
 ```
 
-**frontend/.env**
-```
+In development, CORS also allows HTTP origins on `localhost`, `127.0.0.1`, and `::1` at any port, so Vite can use its fallback port (such as `5174`). In production, only origins listed in `CLIENT_URL` are allowed.
+
+**Frontend — `frontend/.env`**
+
+```env
 VITE_API_URL=http://localhost:5000/api
 VITE_SOCKET_URL=http://localhost:5000
 ```
 
-> Never commit real `.env` files — they're already excluded via `.gitignore`.
+> **Security:** Never commit real `.env` files or expose sensitive credentials. Environment files are already excluded through `.gitignore`.
 
-### 3. Run in development
+Profile photos are stored under `backend/uploads/avatars` and served by the API. This folder is ignored by Git. Production deployments must use persistent storage for this directory or replace the local storage implementation with an object-storage provider.
 
-In two terminals:
+### 3. Run in Development
+
+Start the backend and frontend in separate terminals.
+
+**Terminal 1 — Backend**
 
 ```bash
-# Terminal 1 — backend (http://localhost:5000)
 cd backend
 npm run dev
+```
 
-# Terminal 2 — frontend (http://localhost:5173)
+Backend runs at:
+
+```text
+http://localhost:5000
+```
+
+**Terminal 2 — Frontend**
+
+```bash
 cd frontend
 npm run dev
 ```
 
-Open `http://localhost:5173`, register an account, and start creating projects.
+Frontend runs at:
 
-### 4. Build for production
+```text
+http://localhost:5173
+```
+
+Open the frontend URL, create an account, and start managing your projects.
+
+### 4. Build for Production
+
+Build the frontend:
 
 ```bash
 cd frontend
-npm run build      # outputs static files to frontend/dist
-
-cd ../backend
-npm start           # serves the API (pair with any static host / reverse proxy for the built frontend)
+npm run build
 ```
 
-## API overview
+The production build will be generated inside:
 
-All endpoints are prefixed with `/api` and JSON-based. Protected routes require `Authorization: Bearer <token>`.
+```text
+frontend/dist
+```
 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/auth/register` | Create an account |
-| POST | `/auth/login` | Log in, receive a JWT |
-| GET | `/auth/me` | Current user profile |
-| PUT | `/auth/me` | Update profile |
-| PUT | `/auth/me/password` | Change password |
-| GET | `/auth/search?q=` | Search users (for adding members) |
-| GET | `/projects` | List my projects |
-| POST | `/projects` | Create a project |
-| GET/PUT/DELETE | `/projects/:id` | Read / update / delete a project |
-| POST | `/projects/:id/members` | Add a member by email |
-| DELETE | `/projects/:id/members/:userId` | Remove a member |
-| GET | `/projects/dashboard/stats` | Aggregated dashboard data |
-| GET | `/tasks/project/:projectId` | List tasks for a project |
-| POST | `/tasks` | Create a task |
-| GET/PUT/DELETE | `/tasks/:id` | Read / update / delete a task |
-| GET | `/comments/task/:taskId` | List comments for a task |
-| POST | `/comments` | Add a comment |
-| DELETE | `/comments/:id` | Delete a comment |
+Start the backend:
 
-## Real-time events (Socket.IO)
+```bash
+cd ../backend
+npm start
+```
 
-The client authenticates the socket handshake with its JWT and joins a `project:<id>` room while a project board is open. The server emits:
+The frontend and backend can then be deployed using suitable hosting or a reverse proxy configuration.
 
-- `task:created`, `task:updated`, `task:deleted`
-- `comment:created`, `comment:deleted`
+## API Overview
 
-## Notes
+All API endpoints use the `/api` prefix and return JSON responses. Protected endpoints require:
 
-- Passwords are hashed with bcrypt before storage; the hash is never returned by the API.
-- All project/task/comment routes verify the requester is the project owner or a member before allowing access.
-- Only a project's owner can edit/delete the project or manage its members; only a comment's author can delete that comment.
+```text
+Authorization: Bearer <token>
+```
+
+| Method         | Endpoint                        | Description                         |
+| -------------- | ------------------------------- | ----------------------------------- |
+| POST           | `/auth/register`                | Create a new account                |
+| POST           | `/auth/login`                   | Authenticate and receive a JWT      |
+| GET            | `/auth/me`                      | Get the current user profile        |
+| PUT            | `/auth/me`                      | Update the current user profile     |
+| POST           | `/auth/me/avatar`               | Upload or replace a profile photo (`multipart/form-data`, field: `avatar`) |
+| DELETE         | `/auth/me/avatar`               | Remove the current profile photo    |
+| PUT            | `/auth/me/password`             | Change account password             |
+| DELETE         | `/auth/me/account`               | Delete the account after password and `DELETE` confirmation; blocks deletion while the user owns projects |
+| GET            | `/auth/search?q=`               | Search users for project membership |
+| GET            | `/projects`                     | Get the user's projects             |
+| POST           | `/projects`                     | Create a new project                |
+| GET/PUT/DELETE | `/projects/:id`                 | Read, update, or delete a project   |
+| POST           | `/projects/:id/members`         | Add a project member by email       |
+| DELETE         | `/projects/:id/members/:userId` | Remove a project member             |
+| GET            | `/projects/dashboard/stats`     | Get aggregated dashboard statistics |
+| GET            | `/tasks/project/:projectId`     | Get project tasks                   |
+| GET            | `/tasks/mine`                   | Get assigned tasks; supports `q`, `status`, `priority`, `projectId`, `from`, and `to` filters |
+| GET            | `/tasks/search?q=`              | Search task titles and descriptions across projects available to the current user |
+| POST           | `/tasks`                        | Create a task; optionally provide `blockedBy` task IDs from the same project |
+| GET/PUT/DELETE | `/tasks/:id`                    | Read, update, or delete a task; updates can change `blockedBy` dependencies |
+| GET            | `/comments/task/:taskId`        | Get task comments                   |
+| POST           | `/comments`                     | Add a comment                       |
+| DELETE         | `/comments/:id`                 | Delete a comment                    |
+| GET            | `/notifications`                | Get the latest 30 notifications and unread count |
+| PATCH          | `/notifications/read`           | Mark all of the current user's notifications as read |
+| DELETE         | `/notifications`                | Clear the current user's notifications |
+
+## Real-Time Events
+
+Ridgeline uses Socket.IO to provide real-time collaboration.
+
+The client authenticates the socket connection using the user's JWT and joins a project-specific room while viewing a project board.
+
+### Task Events
+
+```text
+task:created
+task:updated
+task:deleted
+```
+
+### Comment Events
+
+```text
+comment:created
+comment:deleted
+```
+
+## Security & Access Control
+
+* Passwords are securely hashed using **bcrypt** before being stored.
+* Password hashes are never returned through the API.
+* JWT authentication protects private application routes.
+* Project, task, and comment operations verify that the requester is authorized as a project owner or member.
+* Only project owners can update or delete projects and manage project members.
+* Only comment authors can delete their own comments.
+* Sensitive environment variables are excluded from version control.
+
+---
+
+                    Built with ❤️ by Umair Ansari

@@ -1,14 +1,29 @@
-// Emits a lightweight real-time notification to a single user's personal
-// socket room. Notifications are transient (not persisted to the DB) - this
-// keeps the feature simple while still giving users live feedback for
-// things that matter: assignments, comments, invites, deadlines.
-const notifyUser = (io, userId, notification) => {
-  if (!io || !userId) return;
-  io.to(`user:${userId.toString()}`).emit('notification', {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    createdAt: new Date().toISOString(),
-    ...notification,
-  });
+const Notification = require('../models/Notification');
+
+const notifyUser = async (io, userId, notification) => {
+  if (!userId) return;
+
+  let payload;
+  try {
+    const saved = await Notification.create({
+      recipient: userId,
+      type: notification.type,
+      message: notification.message,
+      projectId: notification.projectId || null,
+      taskId: notification.taskId || null,
+    });
+    payload = saved.toObject();
+  } catch (error) {
+    console.error(`Failed to persist notification for ${userId}: ${error.message}`);
+    payload = {
+      _id: `transient-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      ...notification,
+      createdAt: new Date().toISOString(),
+      read: false,
+    };
+  }
+
+  if (io) io.to(`user:${userId.toString()}`).emit('notification', payload);
 };
 
 module.exports = { notifyUser };

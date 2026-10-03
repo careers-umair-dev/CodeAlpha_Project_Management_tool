@@ -42,8 +42,8 @@ const CreateProjectModal = ({ open, onClose, onCreated }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/40 p-4 backdrop-blur-sm animate-fade-in">
-      <form onSubmit={handleSubmit} className="w-full max-w-md rounded-xl2 bg-white p-6 shadow-modal">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink-900/40 p-3 py-4 backdrop-blur-sm animate-fade-in sm:items-center sm:p-4">
+      <form onSubmit={handleSubmit} className="my-auto w-full max-w-md rounded-xl2 bg-white p-5 shadow-modal sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-lg font-semibold text-ink-900">New project</h2>
           <button type="button" onClick={onClose} className="rounded-md p-1 text-ink-400 hover:bg-ink-100">

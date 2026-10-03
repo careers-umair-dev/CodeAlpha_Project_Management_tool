@@ -26,7 +26,9 @@ const CommentSection = ({ comments, currentUser, onAdd, onDelete, submitting }) 
               <Avatar user={c.author} size="sm" />
               <div className="min-w-0 flex-1 rounded-lg bg-ink-50 px-3 py-2">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="truncate text-xs font-semibold text-ink-700">{c.author?.name}</span>
+                  <span className="truncate text-xs font-semibold text-ink-700">
+                    {c.author?.name || 'Former member'}
+                  </span>
                   <div className="flex items-center gap-2">
                     <span className="whitespace-nowrap text-[11px] text-ink-400">{timeAgo(c.createdAt)}</span>
                     {currentUser?._id === c.author?._id && (

@@ -27,8 +27,8 @@ const MembersPanel = ({ project, isOwner, onClose, onAdd, onRemove }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/40 p-4 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-sm rounded-xl2 bg-white p-6 shadow-modal">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink-900/40 p-3 py-4 backdrop-blur-sm animate-fade-in sm:items-center sm:p-4">
+      <div className="my-auto w-full max-w-sm rounded-xl2 bg-white p-5 shadow-modal sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-lg font-semibold text-ink-900">Members</h2>
           <button onClick={onClose} className="rounded-md p-1 text-ink-400 hover:bg-ink-100">
@@ -425,15 +425,15 @@ const ProjectDetails = () => {
             className="input pl-9"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <SlidersHorizontal size={14} className="text-ink-400" />
-          <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="input !w-auto">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)] items-center gap-2 sm:flex">
+          <SlidersHorizontal size={14} className="shrink-0 text-ink-400" />
+          <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="input min-w-0">
             <option value="All">All priorities</option>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
           </select>
-          <select value={assigneeFilter} onChange={(e) => setAssigneeFilter(e.target.value)} className="input !w-auto">
+          <select value={assigneeFilter} onChange={(e) => setAssigneeFilter(e.target.value)} className="input min-w-0">
             <option value="All">Everyone</option>
             <option value="Unassigned">Unassigned</option>
             {allMembers.map((m) => (
@@ -475,6 +475,7 @@ const ProjectDetails = () => {
       <TaskModal
         open={modalOpen}
         task={activeTask}
+        projectTasks={tasks}
         projectMembers={allMembers}
         currentUser={user}
         comments={comments}

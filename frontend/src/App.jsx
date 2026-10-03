@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import ProjectDetails from './pages/ProjectDetails';
 import Profile from './pages/Profile';
+import MyTasks from './pages/MyTasks';
 
 const PublicOnlyRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -62,6 +63,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Projects />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-tasks"
+          element={
+            <ProtectedRoute>
+              <MyTasks />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute>
+              <MyTasks calendarView />
             </ProtectedRoute>
           }
         />

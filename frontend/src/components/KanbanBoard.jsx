@@ -78,7 +78,7 @@ const KanbanBoard = ({ tasks, onTaskClick, onAddTask, onQuickAdd, onStatusChange
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid snap-x snap-mandatory auto-cols-[minmax(0,86vw)] grid-flow-col gap-3 overflow-x-auto overscroll-x-contain pb-3 sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:pb-0 sm:snap-none xl:grid-cols-4">
       {COLUMNS.map((column) => (
         <div
           key={column}
@@ -88,7 +88,7 @@ const KanbanBoard = ({ tasks, onTaskClick, onAddTask, onQuickAdd, onStatusChange
           }}
           onDragLeave={() => setDragOverColumn(null)}
           onDrop={(e) => handleDrop(e, column)}
-          className={`flex flex-col rounded-lg border bg-ink-100/60 p-3 transition-all duration-200 ${
+          className={`flex snap-center flex-col rounded-xl border bg-ink-100/60 p-3 transition-all duration-200 ${
             dragOverColumn === column ? 'border-moss-500 bg-moss-100/50 shadow-card' : 'border-transparent'
           }`}
         >

@@ -37,7 +37,14 @@ export const authApi = {
   login: (data) => api.post('/auth/login', data),
   me: () => api.get('/auth/me'),
   updateMe: (data) => api.put('/auth/me', data),
+  uploadAvatar: (file) => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    return api.post('/auth/me/avatar', formData);
+  },
+  deleteAvatar: () => api.delete('/auth/me/avatar'),
   changePassword: (data) => api.put('/auth/me/password', data),
+  deleteAccount: (data) => api.delete('/auth/me/account', { data }),
   searchUsers: (q) => api.get('/auth/search', { params: { q } }),
 };
 
@@ -55,6 +62,8 @@ export const projectApi = {
 
 // --- Tasks ---
 export const taskApi = {
+  listMine: (params) => api.get('/tasks/mine', { params }),
+  search: (q) => api.get('/tasks/search', { params: { q } }),
   listForProject: (projectId) => api.get(`/tasks/project/${projectId}`),
   get: (id) => api.get(`/tasks/${id}`),
   create: (data) => api.post('/tasks', data),
@@ -67,6 +76,13 @@ export const commentApi = {
   listForTask: (taskId) => api.get(`/comments/task/${taskId}`),
   create: (data) => api.post('/comments', data),
   remove: (id) => api.delete(`/comments/${id}`),
+};
+
+// --- Notifications ---
+export const notificationApi = {
+  list: () => api.get('/notifications'),
+  markAllRead: () => api.patch('/notifications/read'),
+  clear: () => api.delete('/notifications'),
 };
 
 export default api;

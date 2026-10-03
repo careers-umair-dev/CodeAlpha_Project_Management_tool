@@ -5,10 +5,14 @@ const {
   loginUser,
   getMe,
   updateMe,
+  uploadAvatar: uploadAvatarController,
+  deleteAvatar,
   changePassword,
+  deleteAccount,
   searchUsers,
 } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
+const uploadAvatar = require('../middleware/avatarUpload');
 
 const router = express.Router();
 
@@ -33,7 +37,10 @@ router.post(
 
 router.get('/me', protect, getMe);
 router.put('/me', protect, updateMe);
+router.post('/me/avatar', protect, uploadAvatar, uploadAvatarController);
+router.delete('/me/avatar', protect, deleteAvatar);
 router.put('/me/password', protect, changePassword);
+router.delete('/me/account', protect, deleteAccount);
 router.get('/search', protect, searchUsers);
 
 module.exports = router;

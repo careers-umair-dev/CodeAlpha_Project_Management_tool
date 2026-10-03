@@ -10,7 +10,7 @@ const initSocket = (io) => {
       if (!token) return next(new Error('Authentication error: no token provided'));
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findById(decoded.id).select('name email avatarColor');
+      const user = await User.findById(decoded.id).select('name email avatarColor avatarUrl');
       if (!user) return next(new Error('Authentication error: user not found'));
 
       socket.user = user;

@@ -1,5 +1,21 @@
 const mongoose = require('mongoose');
 
+const checklistItemSchema = new mongoose.Schema(
+  {
+    text: {
+      type: String,
+      required: [true, 'Checklist item text is required'],
+      trim: true,
+      maxlength: [180, 'Checklist item cannot exceed 180 characters'],
+    },
+    completed: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
+
 const taskSchema = new mongoose.Schema(
   {
     title: {
@@ -13,6 +29,23 @@ const taskSchema = new mongoose.Schema(
       trim: true,
       default: '',
       maxlength: [3000, 'Description cannot exceed 3000 characters'],
+    },
+    checklist: {
+      type: [checklistItemSchema],
+      default: [],
+      validate: {
+        validator: (items) => items.length <= 50,
+        message: 'A task cannot have more than 50 checklist items',
+      },
+    },
+    blockedBy: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Task',
+        },
+      ],
+      default: [],
     },
     project: {
       type: mongoose.Schema.Types.ObjectId,
@@ -41,7 +74,7 @@ const taskSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      default: null,
     },
     order: {
       type: Number,
@@ -53,5 +86,6 @@ const taskSchema = new mongoose.Schema(
 
 taskSchema.index({ project: 1, status: 1 });
 taskSchema.index({ assignee: 1 });
+taskSchema.index({ assignee: 1, dueDate: 1, updatedAt: -1 });
 
 module.exports = mongoose.model('Task', taskSchema);

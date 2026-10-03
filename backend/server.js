@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
+const path = require('path');
 const cors = require('cors');
 const { Server } = require('socket.io');
 
@@ -12,6 +13,7 @@ const authRoutes = require('./routes/authRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const commentRoutes = require('./routes/commentRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 connectDB();
 
@@ -22,12 +24,34 @@ const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
   .split(',')
   .map((origin) => origin.trim());
 
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+const isAllowedOrigin = (origin) => {
+  if (!origin || allowedOrigins.includes(origin)) return true;
+  if (process.env.NODE_ENV !== 'development') return false;
+
+  try {
+    const { hostname, protocol } = new URL(origin);
+    return protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(hostname);
+  } catch {
+    return false;
+  }
+};
+
+const corsOptions = {
+  origin: (origin, callback) => callback(null, isAllowedOrigin(origin)),
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads/avatars', express.static(path.join(__dirname, 'uploads', 'avatars'), {
+  dotfiles: 'deny',
+  index: false,
+  maxAge: '1d',
+}));
 
 const io = new Server(server, {
-  cors: { origin: allowedOrigins, credentials: true },
+  cors: corsOptions,
 });
 initSocket(io);
 // Make io accessible in controllers via req.app.get('io')
@@ -41,6 +65,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

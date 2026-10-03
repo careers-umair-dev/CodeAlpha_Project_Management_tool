@@ -30,6 +30,11 @@ const userSchema = new mongoose.Schema(
         return colors[Math.floor(Math.random() * colors.length)];
       },
     },
+    avatarUrl: {
+      type: String,
+      default: '',
+      maxlength: 300,
+    },
     title: {
       type: String,
       trim: true,
@@ -57,6 +62,7 @@ userSchema.methods.toPublicJSON = function () {
     name: this.name,
     email: this.email,
     avatarColor: this.avatarColor,
+    avatarUrl: this.avatarUrl,
     title: this.title,
     createdAt: this.createdAt,
   };

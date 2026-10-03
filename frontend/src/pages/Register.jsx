@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
@@ -32,60 +32,65 @@ const Register = () => {
 
   return (
     <AuthLayout title="Create your account" subtitle="Set up your workspace and get your team moving.">
-        <form onSubmit={handleSubmit} className="card space-y-4 p-6">
+        <form onSubmit={handleSubmit} className="card space-y-5 rounded-2xl border-white/80 p-5 shadow-[0_18px_50px_rgba(22,27,34,0.08)] sm:p-7">
           <div>
-            <label className="label">Full name</label>
+            <label htmlFor="register-name" className="label text-[13px] font-semibold text-ink-700">Full name</label>
             <input
+              id="register-name"
               required
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="input"
+              className="input h-12 rounded-xl border-ink-200/90 px-4"
               placeholder="Jordan Rivera"
               autoComplete="name"
             />
           </div>
           <div>
-            <label className="label">Email</label>
+            <label htmlFor="register-email" className="label text-[13px] font-semibold text-ink-700">Email</label>
             <input
+              id="register-email"
               type="email"
               required
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="input"
+              className="input h-12 rounded-xl border-ink-200/90 px-4"
               placeholder="you@company.com"
               autoComplete="email"
             />
           </div>
           <div>
-            <label className="label">Password</label>
+            <label htmlFor="register-password" className="label text-[13px] font-semibold text-ink-700">Password</label>
             <div className="relative">
               <input
+                id="register-password"
                 type={showPassword ? 'text' : 'password'}
                 required
                 minLength={6}
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="input pr-10"
+                className="input h-12 rounded-xl border-ink-200/90 px-4 pr-12"
                 placeholder="At least 6 characters"
                 autoComplete="new-password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-600"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-ink-400 transition-colors hover:text-ink-700"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
-          <button type="submit" className="btn-primary w-full" disabled={loading}>
-            {loading ? <Spinner size={16} className="text-white" /> : 'Create account'}
+          <button type="submit" className="btn-primary group mt-1 h-12 w-full justify-between rounded-xl px-4" disabled={loading}>
+            <span className="flex-1 text-center">{loading ? <Spinner size={16} className="mx-auto text-white" /> : 'Create account'}</span>
+            {!loading && <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" />}
           </button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-ink-500">
+        <p className="mt-6 text-center text-sm text-ink-500">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-ink-900 hover:underline">
+          <Link to="/login" className="font-semibold text-moss-700 decoration-moss-500/40 underline-offset-4 hover:underline">
             Sign in
           </Link>
         </p>

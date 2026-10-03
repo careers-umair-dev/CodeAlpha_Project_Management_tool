@@ -34,11 +34,11 @@ const PRIORITY_COLORS = {
 };
 
 const StatCard = ({ icon: Icon, label, value, accent }) => (
-  <div className="card group flex min-h-[112px] items-center gap-4 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-raised sm:p-5">
-    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${accent}`}>
+  <div className="card group flex min-h-[104px] min-w-0 items-center gap-3 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-raised sm:min-h-[112px] sm:gap-4 sm:p-5">
+    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:h-11 sm:w-11 ${accent}`}>
       <Icon size={19} strokeWidth={1.8} />
     </div>
-    <div>
+    <div className="min-w-0">
       <p className="font-display text-2xl font-semibold leading-none text-ink-900">{value}</p>
       <p className="mt-2 text-xs font-medium text-ink-500">{label}</p>
     </div>
@@ -98,7 +98,7 @@ const Dashboard = () => {
         <div aria-hidden="true" className="pointer-events-none absolute right-48 top-1/2 hidden h-40 w-40 -translate-y-1/2 rounded-full border border-white/10 lg:block" />
       </div>
 
-      <div className="dashboard-reveal grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6" style={{ animationDelay: '60ms' }}>
+      <div className="dashboard-reveal grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6" style={{ animationDelay: '60ms' }}>
         <StatCard icon={FolderKanban} label="Projects" value={stats.totalProjects} accent="bg-blue-50 text-blue-600" />
         <StatCard icon={ListTodo} label="Total tasks" value={stats.totalTasks} accent="bg-ink-100 text-ink-600" />
         <StatCard
