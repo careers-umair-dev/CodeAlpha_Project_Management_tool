@@ -86,7 +86,6 @@ dist
 
 # Gatsby files
 .cache/
-public
 
 # Storybook build outputs
 .out
@@ -127,3 +126,10 @@ dist/
 # Uploads
 uploads/
 public/uploads/
+
+# Python virtual environment
+venv/
+.venv/
+
+# Vercel local project link
+.vercel

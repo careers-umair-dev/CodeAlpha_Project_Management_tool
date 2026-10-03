@@ -22,7 +22,8 @@ const server = http.createServer(app);
 
 const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
   .split(',')
-  .map((origin) => origin.trim());
+  .map((origin) => origin.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
 
 const isAllowedOrigin = (origin) => {
   if (!origin || allowedOrigins.includes(origin)) return true;
